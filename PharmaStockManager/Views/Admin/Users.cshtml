@@ -1,0 +1,765 @@
+﻿
+
+@model IEnumerable<PharmaStockManager.Models.ViewModel.UserManagementViewModel>
+@{
+    ViewData["Title"] = "User Management";
+    Layout = null;
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<style>
+    :root {
+        --primary-blue: #5a9ecf;
+        --lavender: #a68cb1;
+        --mint-green: #88b8a5;
+        --mid-tone: #93b7df;
+        --background: #f4f5f7;
+        --text: #2f3542;
+        --white: #fff;
+        --gray-light: #e8eaed;
+        --gray-hover: #ddd;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        background: var(--background);
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: var(--text);
+        height: 100vh;
+        position: fixed;
+        padding: 2rem;
+        color: var(--white);
+        top: 0;
+        left: 0;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .sidebar-header {
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .logo-circle {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, var(--primary-blue) 33%, var(--mint-green) 33% 66%, var(--lavender) 66%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pill-icon {
+        width: 20px;
+        height: 32px;
+        background-color: var(--white);
+        border-radius: 16px;
+    }
+
+    .nav-menu {
+        list-style: none;
+    }
+
+    .nav-item {
+        margin: 0.5rem 0;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 1rem;
+        }
+
+    .main-content {
+        flex: 1;
+        margin-left: 250px;
+        padding: 2rem;
+        background-color: var(--background);
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+    }
+
+    thead {
+        background-color: var(--lavender);
+        color: var(--white);
+    }
+
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-light);
+    }
+
+    tbody tr:hover {
+        background-color: var(--gray-hover);
+    }
+
+    .button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .button-edit {
+        background-color: var(--mint-green);
+        color: var(--white);
+        margin-right: 0.5rem;
+    }
+
+    .button-delete {
+        background-color: var(--primary-blue);
+        color: var(--white);
+    }
+
+    .button:hover {
+        opacity: 0.9;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+    }
+
+    @@media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+    }
+    .button-accept {
+        background-color: #4CAF50;
+        color: var(--white);
+        margin-right: 0.5rem;
+    }
+
+    .button-reject {
+        background-color: #f44336;
+        color: var(--white);
+        margin-right: 0.5rem;
+    }
+
+    .button-employee {
+        background-color: #2196F3;
+        color: var(--white);
+        margin-right: 0.5rem;
+    }
+
+    .button-customer {
+        background-color: #ff9800;
+        color: var(--white);
+        margin-right: 0.5rem;
+    }
+
+    .pending-row {
+        background-color: #fff3cd;
+    }
+
+        .pending-row:hover {
+            background-color: #ffe69c;
+        }
+
+    .role-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .role-employee {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .role-customer {
+        background-color: #fff3e0;
+        color: #f57c00;
+    }
+
+    .role-pending {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    .header {
+        background: var(--white);
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        max-width: 1200px;
+        margin: 20px auto;
+    }
+    .welcome-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .welcome-text h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+    }
+
+    .welcome-text p {
+        color: var(--text);
+        opacity: 0.8;
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .button2 {
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        border: none;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #b0c7e8, var(--mid-tone), #7a9dc4);
+        color: var(--white);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .button2:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+    /* Add to your existing style section */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+    }
+
+    .modal-content {
+        background-color: var(--white);
+        padding: 2rem;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .permissions-table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: var(--mint-green);
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+</style>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-circle">
+                <div class="pill-icon"></div>
+            </div>
+            <span class="logo-text">Pharma Stock Manager</span>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a asp-controller="AdminDashboard" asp-action="Index" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Drugs" asp-action="Index" class="nav-link">
+                    <i class="fas fa-pills"></i>
+                    Envanter
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Request" asp-action="Index" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Siparişler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Admin" asp-action="Users" class="nav-link active">
+                    <i class="fas fa-users"></i>
+                    Kullanıcılar
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Categories" asp-action="Index" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    Kategoriler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Drugs" asp-action="TransactionHistory" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    İşlem Geçmişi
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Account" asp-action="AdminProfile" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    Profil
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<main class="main-content">
+    <header class="header">
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h1>Kullanıcı yönetimi</h1>
+            </div>
+        </div>
+
+        <div class="user-menu">
+            <span id="current-time"></span>
+            <a href="@Url.Action("Logout", "Account")" class="button2">
+                <i class="fas fa-sign-out-alt"></i>
+                Çıkış yap
+            </a>
+        </div>
+    </header>
+    <div class="container">
+        
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <table>
+            <thead>
+                <tr>
+                    <th>E-posta</th>
+                    <th>Kullanıcı adı</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    var isPending = !user.ActiveUser;
+
+                    <tr class="@(isPending ? "pending-row" : "")">
+                        <td>@user.Email</td>
+                        <td>@user.UserName</td>
+                        <td>
+                            <span class="role-badge @(user.Role == "Employee" ? "role-employee" :
+                              user.Role == "Customer" ? "role-customer" :
+                              "role-pending")">
+                                @(user.Role == "Employee" ? "Çalışan" :
+                                    user.Role == "Customer" ? "Müşteri" :
+                                    "Beklemede")
+                            </span>
+                        </td>
+                        <td>
+                            @if (isPending)
+                            {
+                                <button class="button button-accept" onclick="acceptUser(@user.Id)">
+                                    <i class="fas fa-check"></i> Kabul et
+                                </button>
+                                <button class="button button-reject" onclick="rejectUser(@user.Id)">
+                                    <i class="fas fa-times"></i> Reddet
+                                </button>
+                            }
+                            <button class="button button-employee" onclick="makeEmployee(@user.Id)">
+                                <i class="fas fa-user-tie"></i> Çalışan yap
+                            </button>
+                            <button class="button button-customer" onclick="makeCustomer(@user.Id)">
+                                <i class="fas fa-user"></i> Müşteri yap
+                            </button>
+                            @if(user.Role == "Employee"){
+                                <button class="button button-edit" onclick="editPermissions('@user.Id')">
+                                    <i class="fas fa-edit"></i> İzinleri düzenle
+                                </button>
+                            }
+                            <button class="button button-delete" onclick="deleteUser(@user.Id)">
+                                <i class="fas fa-trash"></i> Sil
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Add this right before the closing </main> tag in Users.cshtml -->
+<div id="permissionsModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>İzinleri Düzenle</h2>
+        <form id="permissionsForm">
+            <input type="hidden" id="userId" name="userId" />
+            <table class="permissions-table">
+                <thead>
+                    <tr>
+                        <th>İzin</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stok düzenle</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="EditStocks" />
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Stok giriş</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="StockIn" />
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Stok çıkış</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="StockOut" />
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sipariş Onaylama</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="RequestApprove" />
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="modal-buttons">
+                <button type="submit" class="button button-edit">Save</button>
+                <button type="button" class="button button-delete" onclick="closePermissionsModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function acceptUser(userId) {
+        if (confirm('Kullanıcıyı kabul etmek istediğinize emin misiniz ?')) {
+            fetch('/Admin/AcceptUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ userId: userId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error accepting user: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bilinmedik bir hata oluştu.');
+                });
+        }
+    }
+
+    function rejectUser(userId) {
+        if (confirm('Kullanıcıyı reddetmek istediğinizden emin misiniz ?')) {
+            fetch('/Admin/RejectUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ userId: userId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error rejecting user: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bilinmedik bir hata oluştu.');
+                });
+        }
+    }
+    function makeEmployee(userId) {
+        if (confirm('Bu kullanıcıyı çalışan yapmak istediğinizden emin misiniz?')) {
+            fetch('/Admin/MakeEmployee?userId=' + userId, { // URL'i değiştirdik
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error changing role: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bilinmedik bir hata oluştu.');
+                });
+        }
+    }
+
+    function makeCustomer(userId) {
+        if (confirm('Bu kullanıcıyı müşteri yapmak istediğinizden emin misiniz?')) {
+            fetch('/Admin/MakeCustomer?userId=' + userId, {  // URL'i değiştirdik
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error changing role: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bilinmedik bir hata oluştu.');
+                });
+        }
+    }
+    function deleteUser(userId) {
+        if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+            fetch(`/Admin/DeleteUser?id=${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting user: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bilinmedik bir hata oluştu.');
+                });
+        }
+    }
+
+        // Add to your existing script section
+        function editPermissions(userId) {
+        document.getElementById('userId').value = userId;
+
+        // URL'yi düzelt ve parseInt ekle
+        fetch(`/Admin/GetUserPermissions?userId=${parseInt(userId)}`)
+            .then(response => response.json())
+            .then(permissions => {
+                document.querySelector('input[name="EditStocks"]').checked = permissions.editStocks;
+                document.querySelector('input[name="StockIn"]').checked = permissions.stockIn;
+                document.querySelector('input[name="StockOut"]').checked = permissions.stockOut;
+                document.querySelector('input[name="RequestApprove"]').checked = permissions.requestApprove;
+                document.getElementById('permissionsModal').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching permissions');
+            });
+    }
+
+    function closePermissionsModal() {
+        document.getElementById('permissionsModal').style.display = 'none';
+    }
+
+        document.getElementById('permissionsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const userId = parseInt(document.getElementById('userId').value);
+        const permissions = {
+            userId: userId,
+            editStocks: document.querySelector('input[name="EditStocks"]').checked,
+            stockIn: document.querySelector('input[name="StockIn"]').checked,
+            stockOut: document.querySelector('input[name="StockOut"]').checked,
+            requestApprove: document.querySelector('input[name="RequestApprove"]').checked
+        };
+
+        fetch('/Admin/UpdatePermissions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify(permissions)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closePermissionsModal();
+                location.reload();
+            } else {
+                alert('Error updating permissions: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+                alert('Bilinmedik bir hata oluştu.');
+        });
+    });
+</script>

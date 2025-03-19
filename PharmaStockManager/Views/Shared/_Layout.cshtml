@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PharmaStockManager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/styles2.css" asp-append-version="true" />
+    <style>
+        .auth-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, #B6CEE8 0%, #9FB9D4 100%);
+            color: rgba(255, 255, 255, 0.98) !important;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            min-width: 120px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+            .auth-button:hover {
+                background: linear-gradient(135deg, #9FB9D4 0%, #8BA5C0 100%);
+                color: white !important;
+                text-decoration: none;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            }
+
+        .manage-dropdown .dropdown-toggle {
+            background: linear-gradient(135deg, #B6CEE8 0%, #9FB9D4 100%);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 24px;
+            color: rgba(255, 255, 255, 0.98);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+            .manage-dropdown .dropdown-toggle:hover {
+                background: linear-gradient(135deg, #9FB9D4 0%, #8BA5C0 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <!-- Logo -->
+                <a class="navbar-brand logo d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <div class="logo-circle">
+                        <div class="pill-icon"></div>
+                    </div>
+                    <span class="logo-text ms-2">Pharma Stock Manager</span>
+                </a>
+
+                <!-- Toggle Button for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Links -->
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 nav-links">
+                        <li class="nav-item">
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">İletişime Geçin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">Hakkımızda</a>
+                        </li>
+
+                        @if (User.IsInRole("SuperAdmin")){
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="SuperAdmin" asp-action="Index">Süper Admin Panel</a>
+                            </li>
+                        }
+
+                        <!-- Admin Only Links -->
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Drugs" asp-action="Index">İlaçları Yönet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Categories" asp-action="Index">Kategorileri Yönet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Drugs" asp-action="TransactionHistory">İşlem Geçmişi</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Request" asp-action="Index">Siparişler</a>
+                            </li>
+                        }
+
+                        <!-- User Only Links -->
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="UserPanel" asp-action="Index">Kullanıcı Paneli</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- User Authentication Links -->
+                    <ul class="navbar-nav align-items-center">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown manage-dropdown me-3">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Yönet
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ChangePassword">Şifre Değiştir</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ChangeEmail">E-posta değiştir</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="EnableAuthenticator">Doğrulayıcıyı aktif et</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="auth-button" asp-area="" asp-controller="Account" asp-action="Logout">Çıkış yap</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="auth-button" asp-area="" asp-controller="Account" asp-action="Login">Giriş yap</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="auth-button" asp-area="" asp-controller="Account" asp-action="Register">Kaydol</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Notification Messages -->
+        <div class="mt-3">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+        </div>
+
+        <!-- Main Content -->
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - PharmaStockManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

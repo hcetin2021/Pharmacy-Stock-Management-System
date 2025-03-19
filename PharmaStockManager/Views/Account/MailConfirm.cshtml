@@ -1,0 +1,190 @@
+﻿@model PharmaStockManager.Models.Identity.MailConfirmViewModel
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eposta Doğrulama - Pharma Stock Manager</title>
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <style>
+        :root {
+            --primary-blue: #5a9ecf;
+            --soft-blue: #e8f4ff;
+            --lavender: #a68cb1;
+            --background: #f4f5f7;
+            --text: #2f3542;
+            --white: #ffffff;
+            --gray-light: #e8eaed;
+            --gray: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: "Inter", system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 2rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+                color: var(--text);
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid var(--gray-light);
+                border-radius: 8px;
+                font-size: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: var(--primary-blue);
+                    box-shadow: 0 4px 12px rgba(90, 158, 207, 0.2);
+                }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--lavender), var(--primary-blue));
+            color: var(--white);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+            .button:hover {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
+
+        .back-button {
+            background-color: #dce6f7;
+            color: #2c3e50;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+            .back-button:hover {
+                background-color: #aac4e8;
+            }
+
+        .resend-button {
+            background-color: var(--soft-blue);
+            color: var(--primary-blue);
+            margin-left: 1rem;
+        }
+
+            .resend-button:disabled {
+                background-color: var(--gray-light);
+                color: var(--gray);
+                cursor: not-allowed;
+                transform: none;
+                opacity: 0.7;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='/'">&larr; Geri</button>
+        <h1>Epostanızı doğrulayın.</h1>
+        <form asp-action="MailConfirm" asp-controller="Account" method="post">
+            <div class="form-group">
+                <label>Eposta Adresi</label>
+                <input type="text" disabled class="form-control" value="@ViewBag.Email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmCode">Doğrulama Kodu</label>
+                <input asp-for="ConfirmCode" type="text" class="form-control" placeholder="6 haneli kodu giriniz." required />
+                <span asp-validation-for="ConfirmCode" class="text-danger"></span>
+            </div>
+            <div>
+                <button type="submit" class="button">Eposta Doğrula</button>
+                <button type="button" id="resendCodeBtn" class="button" onclick="sendActivationCode()">Kod Gönder</button>
+                <span id="cooldownText" class="text-muted"></span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function sendActivationCode() {
+            const resendBtn = document.getElementById('resendCodeBtn');
+            const cooldownText = document.getElementById('cooldownText');
+
+            // Disable the button immediately
+            resendBtn.disabled = true;
+
+            // Make AJAX call to send activation code
+            fetch('/Account/SendActivationCode', { method: 'POST' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Bağlantı hatası oluştu');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Start cooldown timer
+                        let timeLeft = 60;
+                        cooldownText.textContent = `Tekrar göndermek için ${timeLeft} saniye bekleyiniz.`;
+
+                        const cooldownInterval = setInterval(() => {
+                            timeLeft--;
+                            if (timeLeft > 0) {
+                                cooldownText.textContent = `Tekrar göndermek için ${timeLeft} saniye bekleyiniz.`;
+                            } else {
+                                clearInterval(cooldownInterval);
+                                resendBtn.disabled = false;
+                                cooldownText.textContent = '';
+                            }
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resendBtn.disabled = false;
+                    cooldownText.textContent = 'Kod Gönderilemedi.';
+                });
+        }
+    </script>
+</body>
+</html>

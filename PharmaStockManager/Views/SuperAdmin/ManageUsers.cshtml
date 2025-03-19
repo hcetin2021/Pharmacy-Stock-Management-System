@@ -1,0 +1,377 @@
+﻿@model ManageUsersViewModel
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcıları Yönet - Pharma Stock Manager</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fbfd; /* Soft light background */
+            color: #333; /* Neutral text color */
+        }
+
+        header {
+            background-color: #dce6f7; /* Light blue */
+            color: #2c3e50; /* Darker blue for contrast */
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .role-button {
+            background-color: #dce6f7; /* Light blue */
+            color: #2c3e50;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+            .role-button.active {
+                background-color: #aac4e8; /* Slightly darker light blue */
+            }
+
+            .role-button:hover {
+                background-color: #aac4e8;
+            }
+
+        .table-container {
+            display: none;
+        }
+
+            .table-container.active {
+                display: block;
+            }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: #ffffff; /* White for clarity */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .user-table th, .user-table td {
+                text-align: left;
+                padding: 15px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .user-table th {
+                background-color: #aac4e8; /* Light blue header */
+                color: #2c3e50;
+            }
+
+        .action-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .button-activate {
+            background-color: #a8df90; /* Light green */
+            color: #2c3e50;
+        }
+
+        .button-deactivate {
+            background-color: #f5b7b1; /* Light red */
+            color: #2c3e50;
+        }
+
+        .button-delete {
+            background-color: #ffd59e; /* Light orange */
+            color: #2c3e50;
+        }
+
+        .button-activate:hover {
+            background-color: #93c97c; /* Slightly darker green */
+        }
+
+        .button-deactivate:hover {
+            background-color: #e99a96; /* Slightly darker red */
+        }
+
+        .button-delete:hover {
+            background-color: #ffbe75; /* Slightly darker orange */
+        }
+
+        nav {
+            display: flex;
+            justify-content: center; /* Centers the navigation bar */
+            gap: 10px; /* Adds a small, uniform space between buttons */
+            margin-bottom: 1rem;
+        }
+
+        .role-button {
+            background-color: #dce6f7; /* Light blue */
+            color: #2c3e50; /* Darker blue for contrast */
+            border: none;
+            padding: 0.6rem 1.2rem; /* Reduced padding for a compact design */
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+            .role-button.active {
+                background-color: #aac4e8; /* Slightly darker light blue */
+            }
+
+            .role-button:hover {
+                background-color: #aac4e8; /* Hover effect */
+            }
+
+        .back-button {
+            background-color: #dce6f7; /* Light blue */
+            color: #2c3e50; /* Dark blue */
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .back-button:hover {
+                background-color: #aac4e8; /* Slightly darker light blue */
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='/SuperAdmin/'">← Geri</button>
+        <header>
+            <h1>Kullanıcıları Yönet</h1>
+        </header>
+        <nav>
+            <button class="role-button active" data-role="admins">Adminler</button>
+            <button class="role-button" data-role="customers">Müşteriler</button>
+            <button class="role-button" data-role="employees">Çalışanlar</button>
+        </nav>
+        <main>
+            <!-- Admin Table -->
+            <div class="table-container active" id="admins">
+                <h2>Adminler</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Depo Adı</th>
+                            <th>İsim</th>
+                            <th>Eposta</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.AdminUsers)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>@user.WarehouseName</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                @if (@user.ActiveUser)
+                                {
+                                    <td>Aktif</td>
+                                    <td>
+                                        <a class="action-button button-deactivate" asp-action="DeactivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Deaktive
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>Pasif</td>
+                                    <td>
+                                        <a class="action-button button-activate" asp-action="ActivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Aktifleştirme
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- Customer Table -->
+            <div class="table-container" id="customers">
+                <h2>Customers</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Depo Adı</th>
+                            <th>İsim</th>
+                            <th>Eposta</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.CustomerUsers)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>@user.WarehouseName</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                @if (@user.ActiveUser)
+                                {
+                                    <td>Aktif</td>
+                                    <td>
+                                        <a class="action-button button-deactivate" asp-action="DeactivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Deaktive
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>Pasif</td>
+                                    <td>
+                                        <a class="action-button button-activate" asp-action="ActivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Aktifleştirme
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- Employee Table -->
+            <div class="table-container" id="employees">
+                <h2>Employees</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Depo Adı</th>
+                            <th>İsim</th>
+                            <th>Eposta</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.EmployeeUsers)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>@user.WarehouseName</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                @if (@user.ActiveUser)
+                                {
+                                    <td>Aktif</td>
+                                    <td>
+                                        <a class="action-button button-deactivate" asp-action="DeactivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Deaktive
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>Pasif</td>
+                                    <td>
+                                        <a class="action-button button-activate" asp-action="ActivateUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Aktifleştirme
+                                        </a>
+                                        <a class="action-button button-delete" asp-action="DeleteUser" asp-controller="SuperAdmin" asp-route-id="@user.Id">
+                                            Sil
+                                        </a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script>
+        // JavaScript for Interactive Role Switching with Confirmation Dialogs
+        const buttons = document.querySelectorAll('.role-button');
+        const tables = document.querySelectorAll('.table-container');
+
+        // Role Switching Logic
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active state from all buttons and hide all tables
+                buttons.forEach(btn => btn.classList.remove('active'));
+                tables.forEach(table => table.classList.remove('active'));
+
+                // Add active state to the clicked button and show the associated table
+                button.classList.add('active');
+                document.getElementById(button.dataset.role).classList.add('active');
+            });
+        });
+
+        // Add Confirmation Dialogs for Action Buttons
+        document.querySelectorAll('.table-container').forEach(container => {
+            container.addEventListener('click', (event) => {
+                const button = event.target.closest('.action-button');
+                if (!button) return;
+
+                event.preventDefault();
+
+                let actionText = '';
+                let confirmMessage = '';
+
+                if (button.classList.contains('button-activate')) {
+                    actionText = 'activate';
+                    confirmMessage = 'İşleme devam etmek istiyor musunuz ?';
+                } else if (button.classList.contains('button-deactivate')) {
+                    actionText = 'deactivate';
+                    confirmMessage = 'İşleme devam etmek istiyor musunuz ?';
+                } else if (button.classList.contains('button-delete')) {
+                    actionText = 'delete';
+                    confirmMessage = 'İşleme devam etmek istiyor musunuz ? Bu işlem geri alınamaz';
+                }
+
+                if (confirmMessage && confirm(confirmMessage)) {
+                    // If it's a link (for Employee table)
+                    if (button.tagName === 'A') {
+                        window.location.href = button.href;
+                    }
+                    // If it's a button (for Admin and Customer tables)
+                    else {
+                        alert(`User will be ${actionText}d`);
+                    }
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>

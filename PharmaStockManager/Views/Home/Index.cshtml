@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    /* CTA Buttons Style */
+    .cta-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .button {
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #B6CEE8 0%, #9FB9D4 100%);
+        color: rgba(255, 255, 255, 0.98);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        min-width: 150px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+        .button:hover {
+            background: linear-gradient(135deg, #9FB9D4 0%, #8BA5C0 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+</style>
+
+<div class="container">
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Ecza Deposu Stok Yönetimi</h1>
+                <p>
+                    İlaç stoklarını verimli bir şekilde yönetmek için tasarlanmış akıllı bir sistemle depo operasyonlarınızı optimize edin ve iyileştirin.
+                </p>
+                <div class="cta-buttons">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("Index", "AdminDashboard")" class="button">Hemen Başlayın</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "UserPanel")" class="button">Hemen Başlayın</a>
+                        }
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Register", "Account")" class="button">Hemen Başlayın</a>
+                    }
+                    <button class="button" onclick="location.href='https://www.youtube.com/watch?v=jeyYKcckSbM'">Tanıtımı İzle</button>
+                </div>
+            </div>
+            <div class="hero-circles">
+                <!-- Manager Icon -->
+                <div class="circle circle-1">
+                    <button class="circle-button"
+                            onclick="location.href='@Url.Action("Index", "AdminDashboard")'">
+                        <img src="/icons/icon-1.png" alt="Manager Icon" class="role-icon" />
+                        <div class="role-text">Yönetici</div>
+                    </button>
+                </div>
+
+                <!-- Employee Icon -->
+                <div class="circle circle-2">
+                    <button class="circle-button"
+                            onclick="location.href='@Url.Action("Index", "Employee")'">
+                        <img src="/icons/icon-2.png" alt="Employee Icon" class="role-icon" />
+                        <div class="role-text">Çalışan</div>
+                    </button>
+                </div>
+
+                <!-- Customer Icon -->
+                <div class="circle circle-3">
+                    <button class="circle-button"
+                            onclick="location.href='@Url.Action("Index", "UserPanel")'">
+                        <img src="/icons/icon-3.png" alt="Customer Icon" class="role-icon" />
+                        <div class="role-text">Müşteri</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Stok Takibi</h3>
+                <p>İlaç stok seviyelerinizin gerçek zamanlı takibi</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Akıllı Analitik</h3>
+                <p>Daha iyi stok kararları için veri odaklı içgörüler</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Gelişmiş Kullanıcı Deneyimi</h3>
+                <p>Kullanıcı odaklı tasarım ile kolay gezinme ve verimli görev yönetimi.</p>
+            </div>
+        </section>
+    </main>
+</div>

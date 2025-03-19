@@ -1,0 +1,151 @@
+﻿@model PharmaStockManager.Models.Identity.LoginViewModel
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/styles.css">
+    <style>
+        /* Custom styles for login form and buttons */
+        .form-actions button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            .form-actions button:hover {
+                background-color: var(--primary-blue-hover);
+            }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+            .login-link a {
+                color: var(--primary-blue);
+                text-decoration: underline;
+            }
+
+        .hero.login-hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Center the text horizontally */
+            background-color: #f4f4f4; /* Optional, adjust according to your design */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding-top: 10px; /* Adjust this value to move the content closer to the top */
+        }
+
+        .hero.login-hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Center the text horizontally */
+            background-color: #f4f4f4; /* Optional, adjust according to your design */
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--lavender), var(--primary-blue));
+            color: var(--white);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+            .button:hover {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
+    </style>
+    <title>Giriş Yap - Pharma Stock Manager</title>
+</head>
+<body>
+    <div class="container">
+
+        <header class="hero login-hero">
+            <div class="hero-content">
+                <h1>Giriş Yap</h1>
+                <p>Tekrar hoş geldiniz! Hesabınıza erişmek için lütfen giriş yapın.</p>
+            </div>
+        </header>
+
+        <section class="login-form">
+            @if (ViewData["RequiresTwoFactor"] != null && (bool)ViewData["RequiresTwoFactor"])
+            {
+                <!-- 2FA Code Form -->
+                <form asp-action="Verify2faCode" asp-controller="Account" method="post">
+                    <div>
+                        <label for="code">2FA kodunuzu girin:</label>
+                        <input type="text" id="code" name="code" class="form-control" placeholder="6 haneli kodu girin" required />
+                        <span class="text-danger">@ViewData["ErrorMessage"]</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Kodu Doğrula</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <!-- Normal Login Form -->
+                <form asp-action="Login" asp-controller="Account" method="post">
+                    <!-- Display validation errors at the top -->
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+                    {
+                        <div class="alert alert-danger">
+                            @ViewData["ErrorMessage"]
+                        </div>
+                    }
+
+                    <div>
+                        <label asp-for="Email">E-posta</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="E-posta adresinizi girin" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password">Şifre</label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi girin" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="button">Giriş Yap</button>
+                        <a href="/Account/ForgotPassword" class="link-secondary">Şifrenizi mi unuttunuz?</a>
+                    </div>
+                </form>
+            }
+
+            <!-- Register link -->
+            <div class="register-link">
+                <p>Hesabınız yok mu? <a href="/Account/Register">Kayıt olun</a></p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Script to validate form and display validation errors -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

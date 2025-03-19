@@ -1,0 +1,745 @@
+﻿@model IEnumerable<PharmaStockManager.Models.Drug>
+@{
+    ViewData["Title"] = "İlaç Stok Yönetimi";
+    Layout = null;
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<!-- Existing CSS styles remain the same -->
+<style>
+    :root {
+    --primary-blue: #5a9ecf;
+    --lavender: #a68cb1;
+    --mint-green: #88b8a5;
+    --mid-tone: #93b7df;
+    --background: #f4f5f7;
+    --text: #2f3542;
+    --white: #fff;
+    --gray-light: #e8eaed;
+    --gray-hover: #ddd;
+    --filter-bg: #f9f9f9;
+    --filter-border: #ccc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--text);
+    height: 100vh;
+    position: fixed;
+    padding: 2rem;
+    color: var(--white);
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-circle {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--primary-blue) 33%, var(--mint-green) 33% 66%, var(--lavender) 66%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pill-icon {
+    width: 20px;
+    height: 32px;
+    background-color: var(--white);
+    border-radius: 16px;
+}
+
+.nav-menu {
+    list-style: none;
+}
+
+.nav-item {
+    margin: 0.5rem 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .nav-link:hover, .nav-link.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        transform: translateX(5px);
+    }
+
+    .nav-link i {
+        width: 20px;
+        margin-right: 1rem;
+    }
+
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 2rem;
+    background-color: var(--background);
+    min-height: calc(100vh - 60px);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button-add {
+    background-color: var(--lavender);
+    color: var(--white);
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+}
+
+    .button-add:hover {
+        background-color: #5a54d4;
+        color: var(--white);
+    }
+
+.filter-form {
+    background: var(--filter-bg);
+    padding: 1rem;
+    border: 1px solid var(--filter-border);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+    .filter-form input,
+    .filter-form select,
+    .filter-form button {
+        padding: 0.5rem;
+        border: 1px solid var(--filter-border);
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .filter-form input,
+    .filter-form select {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-form button {
+        background-color: var(--primary-blue);
+        color: var(--white);
+        cursor: pointer;
+        min-width: 100px;
+    }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+    table thead {
+        background-color: var(--lavender);
+        color: var(--white);
+    }
+
+    table th, table td {
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gray-hover);
+    }
+
+    table tbody tr:hover {
+        background-color: var(--gray-hover);
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: var(--gray-light);
+    }
+
+.button-edit {
+    background-color: var(--mint-green);
+    color: var(--white);
+    margin-right: 0.5rem;
+}
+
+.button-delete {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .modal-content input {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+    }
+
+@@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .filter-form input,
+    .filter-form select {
+        width: 100%;
+    }
+}
+
+    .header {
+        background: var(--white);
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        max-width: 1200px;
+        margin: 20px auto;
+    }
+
+    .welcome-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .welcome-text h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+    }
+
+    .welcome-text p {
+        color: var(--text);
+        opacity: 0.8;
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .button2 {
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        border: none;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #b0c7e8, var(--mid-tone), #7a9dc4);
+        color: var(--white);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .button2:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+        gap: 1rem;
+    }
+
+        .pagination .button {
+            padding: 0.5rem 1rem;
+            background-color: var(--mid-tone);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .pagination .button:hover {
+                background-color: var(--primary-blue);
+            }
+
+        .pagination .page-info {
+            font-size: 1rem;
+            color: var(--text);
+        }
+</style>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-circle">
+                <div class="pill-icon"></div>
+            </div>
+            <span class="logo-text">Pharma Stock Manager</span>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a asp-controller="AdminDashboard" asp-action="Index" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Drugs" asp-action="Index" class="nav-link active">
+                    <i class="fas fa-pills"></i>
+                    Envanter
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Request" asp-action="Index" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Siparişler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Admin" asp-action="Users" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    Kullanıcılar
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Categories" asp-action="Index" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    Kategoriler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Drugs" asp-action="TransactionHistory" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    İşlem geçmişi
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Account" asp-action="AdminProfile" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    Profil
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<main class="main-content">
+    <header class="header">
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h1>İlaç Stok</h1>
+            </div>
+        </div>
+
+        <div class="user-menu">
+            <span id="current-time"></span>
+            <a href="@Url.Action("Logout", "Account")" class="button2">
+                <i class="fas fa-sign-out-alt"></i>
+                Çıkış Yap
+            </a>
+        </div>
+    </header>
+    <div class="container">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @Html.AntiForgeryToken()
+        <button class="button button-add" onclick="openModal('add', 'Ticari')">
+            Ticari İlaç Ekle
+        </button>
+        <button class="button button-add" onclick="openModal('add', 'Klinik')">
+            Klinik İlaç Ekle
+        </button>
+
+        <form id="filter-form" class="filter-form">
+            <input type="text" id="filter-name" placeholder="İlaç Adı" />
+            <select id="filter-type">
+                <option value="">İlaç Tipi</option>
+                <option value="Ticari">Ticari</option>
+                <option value="Klinik">Klinik</option>
+            </select>
+            <select id="filter-category">
+                <option value="">Kategori</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.Name">@category.Name</option>
+                }
+            </select>
+            <input type="date" id="filter-expiry-date" placeholder="Son Kullanma Tarihi" />
+            <button type="button" onclick="applyFilter()">Filtrele</button>
+        </form>
+
+        <section class="all-medicines">
+            <h2>Tüm İlaçlar</h2>
+            <table class="medicine-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>@Html.DisplayNameFor(model => model.Name)</th>
+                        <th>İlaç Tipi</th>
+                        <th>@Html.DisplayNameFor(model => model.Quantity)</th>
+                        <th>@Html.DisplayNameFor(model => model.Category)</th>
+                        <th>@Html.DisplayNameFor(model => model.UnitPrice)</th>
+                        <th>Son Kullanma Tarihi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="medicine-table-body">
+                    @foreach (var item in Model)
+                    {
+                        <tr data-id="@item.Id">
+                            <td>@item.Id</td>
+                            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DrugType)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UnitPrice)</td>
+                            <td>@item.ExpiryDate?.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <button class="button button-edit" onclick="openModal('edit', '@item.DrugType', @item.Id)">
+                                    Düzenle
+                                </button>
+                                <button class="button button-update-stock" onclick="openModal('updateStock', '@item.DrugType', @item.Id)">
+                                    Stok Güncelle
+                                </button>
+                                <button class="button button-delete" onclick="deleteDrug(@item.Id)">
+                                    Sil
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="drugModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">İlaç İşlemi</h2>
+            <form id="drugForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="drugId" name="Id" />
+                <input type="hidden" id="drugType" name="DrugType" />
+                
+                <div class="form-group">
+                    <label for="Name">İlaç Adı</label>
+                    <input type="text" id="Name" name="Name" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="Category">Kategori</label>
+                    <input type="text" id="Category" name="Category" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="Quantity">Miktar</label>
+                    <input type="number" id="Quantity" name="Quantity" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="UnitPrice">Birim Fiyat</label>
+                    <input type="number" id="UnitPrice" name="UnitPrice" step="0.01" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="ExpiryDate">Son Kullanma Tarihi</label>
+                    <input type="date" id="ExpiryDate" name="ExpiryDate" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="CriticalStockLevel">Kritik Stok Seviyesi</label>
+                    <input type="number" id="CriticalStockLevel" name="CriticalStockLevel" class="form-control" min="1" required />
+                    <small class="form-text text-muted">Düşük stok uyarısı almak istediğiniz minimum seviye</small>
+                </div>
+                <div class="form-group">
+                    <label for="MaxRequest">Maksimum İstek Sayısı</label>
+                    <input type="number" id="MaxRequest" name="MaxRequest" class="form-control" min="1" required />
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="button" onclick="closeModal()">İptal</button>
+                    <button type="submit" class="button button-add">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentAction = '';
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        // Global scope'a fonksiyonları ekleyelim
+        window.openModal = function(action, drugType, id = null) {
+            currentAction = action;
+            const modal = document.getElementById('drugModal');
+            const form = document.getElementById('drugForm');
+            const title = document.getElementById('modal-title');
+
+            form.reset();
+            document.getElementById('drugType').value = drugType;
+
+            document.getElementById('MaxRequest').addEventListener('input', function () {
+        });
+
+            if (action === 'edit' && id) {
+                title.textContent = 'İlaç Güncelle';
+                fetchDrugDetails(id);
+                enableAllFields();
+            } else if (action === 'updateStock' && id) {
+                title.textContent = 'Stok Güncelle';
+                fetchDrugDetails(id);
+                disableAllFieldsExceptQuantity();
+            } else {
+                title.textContent = `${drugType} İlaç Ekle`;
+                document.getElementById('drugId').value = '';
+                enableAllFields();
+            }
+
+            modal.style.display = 'flex';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('drugModal').style.display = 'none';
+        };
+
+        window.deleteDrug = function(id) {
+            if (confirm('Bu ilacı silmek istediğinize emin misiniz?')) {
+                fetch(`/Drugs/Delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Silme işlemi başarısız: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Silme işlemi sırasında bir hata oluştu.');
+                });
+            }
+        };
+
+        function fetchDrugDetails(id) {
+            fetch(`/Drugs/Details/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        const drug = data.data;
+                        document.getElementById('drugId').value = drug.id;
+                        document.getElementById('Name').value = drug.name;
+                        document.getElementById('Category').value = drug.category;
+                        document.getElementById('Quantity').value = drug.quantity;
+                        document.getElementById('UnitPrice').value = drug.unitPrice;
+                        document.getElementById('ExpiryDate').value = drug.expiryDate ? drug.expiryDate.split('T')[0] : '';
+                        document.getElementById('CriticalStockLevel').value = drug.criticalStockLevel;
+                        document.getElementById('MaxRequest').value = drug.maxRequest;
+                    } else {
+                        alert('İlaç bilgileri alınamadı: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('İlaç bilgileri alınırken bir hata oluştu.');
+                });
+        }
+
+        function disableAllFieldsExceptQuantity() {
+            document.getElementById('Name').disabled = true;
+            document.getElementById('Category').disabled = true;
+            document.getElementById('UnitPrice').disabled = true;
+            document.getElementById('ExpiryDate').disabled = true;
+            document.getElementById('CriticalStockLevel').disabled = true;
+            document.getElementById('MaxRequest').disabled = true;
+            document.getElementById('Quantity').disabled = false;
+        }
+
+        function enableAllFields() {
+            document.getElementById('Name').disabled = false;
+            document.getElementById('Category').disabled = false;
+            document.getElementById('UnitPrice').disabled = false;
+            document.getElementById('ExpiryDate').disabled = false;
+            document.getElementById('CriticalStockLevel').disabled = false;
+            document.getElementById('MaxRequest').disabled = false;
+            document.getElementById('Quantity').disabled = false;
+        }
+
+            // Form submit handler
+        // Form submit handler
+    document.getElementById('drugForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);  // const yerine let kullanıyoruz
+        let url;
+
+        if (currentAction === 'edit') {
+            url = '/Drugs/Edit';
+        } else if (currentAction === 'updateStock') {
+            url = '/Drugs/UpdateStock';
+            // UpdateStock için sadece Id ve Quantity gönder
+            const newFormData = new FormData();
+            newFormData.append('Id', formData.get('Id'));
+            newFormData.append('Quantity', formData.get('Quantity'));
+            formData = newFormData;  // Artık bu atama çalışacak
+        } else {
+            url = '/Drugs/Create';
+        }
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('İşlem başarısız: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('İşlem sırasında bir hata oluştu.');
+        });
+    });
+
+        // Filter function
+        window.applyFilter = function() {
+            const name = document.getElementById('filter-name').value.toLowerCase();
+            const type = document.getElementById('filter-type').value;
+            const category = document.getElementById('filter-category').value;
+            const expiryDate = document.getElementById('filter-expiry-date').value;
+
+            const rows = document.querySelectorAll('#medicine-table-body tr');
+            rows.forEach(row => {
+                const matchName = row.cells[1].textContent.toLowerCase().includes(name);
+                const matchType = !type || row.cells[2].textContent === type;
+                const matchCategory = !category || row.cells[4].textContent === category;
+                const rowExpiryDate = row.cells[6].textContent;
+                const matchExpiry = !expiryDate || rowExpiryDate <= expiryDate;
+
+                row.style.display = (matchName && matchType && matchCategory && matchExpiry) ? '' : 'none';
+            });
+        };
+
+        // Modal dışına tıklama ile kapatma
+        window.onclick = function(event) {
+            const modal = document.getElementById('drugModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // ESC tuşu ile modal kapatma
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    });
+</script>
