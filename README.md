@@ -1,2 +1,3 @@
 # Pharmacy-Stock-Management-System
  This project was one of our group projects when I was studying for my bachelor's degree at Gebze Technical University.
+ The purpose of our project is to create a warehouse tracking system for a pharmaceutical warehouse. This system will enable the warehouse team to effectively manage and monitor the inventory of medications sent to customers, such as pharmacies. The platform allows administrators to oversee stock levels, add or remove products, and manage user permissions, ensuring efficient inventory management and streamlined order processes for the warehouse
